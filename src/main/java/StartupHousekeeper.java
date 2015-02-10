@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import services.JobDispatcherService;
 import services.ThreadPoolService;
+import utils.ConfigUtil;
 import utils.SimpleLogger;
 
 @Component
@@ -19,5 +20,6 @@ public class StartupHousekeeper implements ApplicationListener<ContextRefreshedE
     	SimpleLogger.info("Starting services:");
         ThreadPoolService.getInstance().start();
         JobDispatcherService.getInstance().start(ThreadPoolService.getInstance());
+//        ConfigUtil.get();
     }
 }

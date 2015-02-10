@@ -46,13 +46,16 @@ public class JobDispatcherService implements IService, IJobToDispatchMonitor, IS
 		
 		final String serviceName = this.getClass().getName();
 		try {
-			AJob webCrawlingJob = null;
 			while (started) {
-				while ((webCrawlingJob = JobManager.getInstance().popWaitingWebCrawlingJob()) == null || SlaveManager.getInstance().getNum() == 0) {
+				while (JobManager.getInstance().getWaitingWebCrawlingJobNum() == 0
+						|| SlaveManager.getInstance().getNum() == 0) {
 					wait();
 				}
-				JobManager.getInstance().moveJobToRunningStatus(webCrawlingJob);
-				JobDispatcher.getInstance().dispatchJob(webCrawlingJob);
+				AJob webCrawlingJob = JobManager.getInstance().popWaitingWebCrawlingJob();
+				if (webCrawlingJob != null) {
+					JobManager.getInstance().moveJobToRunningStatus(webCrawlingJob);
+					JobDispatcher.getInstance().dispatchJob(webCrawlingJob);
+				}
 			}
 			SimpleLogger.logServiceStopSucceed(serviceName);
 		} catch (InterruptedException e) {

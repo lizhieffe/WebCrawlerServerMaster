@@ -30,20 +30,20 @@ public class JobDispatcher {
 	synchronized public void dispatchJob(final AJob job) {		
 		AsyncRestTemplate rest = new AsyncRestTemplate();
 		final SlaveNode slave = JobDispatcherHelper.findSlave(job, this.slaveManager);				
-		ListenableFuture<ResponseEntity<String>> future = rest.exchange(JobDispatcherHelper.constructRequestUrl(slave),
-				HttpMethod.POST, JobDispatcherHelper.constructRequestHttpEntity(job), String.class);
+//		ListenableFuture<ResponseEntity<String>> future = rest.exchange(JobDispatcherHelper.constructRequestUrl(slave),
+//				HttpMethod.POST, JobDispatcherHelper.constructRequestHttpEntity(job), String.class);
 		SimpleLogger.info("[Dispatcher] Dispatching to SLAVE (" + slave.getDomain() +") about job: URL=" 
 				+ ((WebCrawlingJob)job).getUrl() + ", depth=" 
 				+ ((WebCrawlingJob)job).getDepth());
-		try {
-			ResponseEntity<String> response = future.get();
-			SimpleLogger.info("[Dispatcher] Dispatching finished (" + response.getBody() 
-					+ ") to SLAVE (" + slave.getDomain() +") about job: URL=" + ((WebCrawlingJob)job).getUrl() + ", depth=" 
-					+ ((WebCrawlingJob)job).getDepth());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			ResponseEntity<String> response = future.get();
+//			SimpleLogger.info("[Dispatcher] Dispatching finished (" + response.getBody() 
+//					+ ") to SLAVE (" + slave.getDomain() +") about job: URL=" + ((WebCrawlingJob)job).getUrl() + ", depth=" 
+//					+ ((WebCrawlingJob)job).getDepth());
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		} catch (ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 }

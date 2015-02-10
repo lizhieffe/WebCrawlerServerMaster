@@ -25,28 +25,34 @@ public class WebCrawlingJobManager implements IJobManager {
 	}
 	
 	@Override
-	synchronized public boolean addJob(AJob job) {
+	public boolean addJob(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
-		waitingJobs.add(job);
+		synchronized (this) {
+			waitingJobs.add(job);
+		}
 		JobDispatcherService.getInstance().onJobToDispatchAdded();;
 		return true;
 	}
 
-	synchronized public boolean moveJobToWaitingStatus(AJob job) {
+	public boolean moveJobToWaitingStatus(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
-		runningJobs.remove(job);
-		waitingJobs.add(job);
+		synchronized (this) {
+			runningJobs.remove(job);
+			waitingJobs.add(job);
+		}
 		JobDispatcherService.getInstance().onJobToDispatchAdded();;
 		return true;
 	}
 	
-	synchronized public boolean moveJobToRunningStatus(AJob job) {
+	public boolean moveJobToRunningStatus(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
-		waitingJobs.remove(job);
-		runningJobs.add(job);
+		synchronized (this) {
+			waitingJobs.remove(job);
+			runningJobs.add(job);
+		}
 		return true;
 	}
 	
