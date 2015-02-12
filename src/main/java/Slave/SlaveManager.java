@@ -2,13 +2,14 @@ package Slave;
 
 import interfaces.ISlaveManager;
 import ServerNode.ServerNodeHelper;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import daemons.JobDispatcherDaemon;
 import ServerNode.SlaveNode;
-import services.JobDispatcherService;
 
 public class SlaveManager implements ISlaveManager {
 	
@@ -43,7 +44,7 @@ public class SlaveManager implements ISlaveManager {
 			slaves.add(slave);
 			relationIpSlave.put(slave.getDomain(), slave);
 		}
-		JobDispatcherService.getInstance().onSlaveAdded();
+		JobDispatcherDaemon.getInstance().onSlaveAdded();
 		return true;
 	}
 	

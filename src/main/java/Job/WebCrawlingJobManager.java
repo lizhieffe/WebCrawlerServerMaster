@@ -1,9 +1,11 @@
 package Job;
 
 import interfaces.IJobManager;
+
 import java.util.ArrayList;
 import java.util.List;
-import services.JobDispatcherService;
+
+import daemons.JobDispatcherDaemon;
 import abstracts.AJob;
 
 public class WebCrawlingJobManager implements IJobManager {
@@ -31,7 +33,7 @@ public class WebCrawlingJobManager implements IJobManager {
 		synchronized (this) {
 			waitingJobs.add(job);
 		}
-		JobDispatcherService.getInstance().onJobToDispatchAdded();;
+		JobDispatcherDaemon.getInstance().onJobToDispatchAdded();;
 		return true;
 	}
 
@@ -42,7 +44,7 @@ public class WebCrawlingJobManager implements IJobManager {
 			runningJobs.remove(job);
 			waitingJobs.add(job);
 		}
-		JobDispatcherService.getInstance().onJobToDispatchAdded();;
+		JobDispatcherDaemon.getInstance().onJobToDispatchAdded();;
 		return true;
 	}
 	

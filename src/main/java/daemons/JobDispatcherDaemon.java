@@ -1,39 +1,44 @@
-package services;
+package daemons;
 
 import interfaces.IJobToDispatchMonitor;
-import interfaces.IService;
+import interfaces.IDaemon;
 import interfaces.ISlaveMonitor;
-import interfaces.IThreadPoolService;
+import interfaces.IThreadPoolDaemon;
 import utils.SimpleLogger;
 import Job.JobManager;
 import JobDispatcher.JobDispatcher;
 import Slave.SlaveManager;
 import abstracts.AJob;
 
-public class JobDispatcherService implements IService, IJobToDispatchMonitor, ISlaveMonitor {
+public class JobDispatcherDaemon implements IDaemon, IJobToDispatchMonitor, ISlaveMonitor {
 	
 	private boolean started;
 	
-	private static JobDispatcherService instance;
+	private static JobDispatcherDaemon instance;
 	
-	public static JobDispatcherService getInstance() {
+	public static JobDispatcherDaemon getInstance() {
 		if (instance == null)
-			instance = new JobDispatcherService();
+			instance = new JobDispatcherDaemon();
 		return instance;
 	}
 	
-	private JobDispatcherService() {
+	private JobDispatcherDaemon() {
 	}
 
 	@Override
-	public void start(IThreadPoolService threadPoolService) {
+	synchronized public boolean isStarted() {
+		return this.started;
+	}
+	
+	@Override
+	public void start(IThreadPoolDaemon threadPoolDaemon) {
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
 				start();
 			}
 		};
-		threadPoolService.submit(task);
+		threadPoolDaemon.submit(task);
 	}
 	
 	synchronized public void start() {

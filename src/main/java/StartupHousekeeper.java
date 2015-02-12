@@ -2,9 +2,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import services.JobDispatcherService;
-import services.ThreadPoolService;
-import utils.ConfigUtil;
+import daemons.JobDispatcherDaemon;
+import daemons.ThreadPoolDaemon;
 import utils.SimpleLogger;
 
 @Component
@@ -18,8 +17,7 @@ public class StartupHousekeeper implements ApplicationListener<ContextRefreshedE
 	
 	private void startServices() {
     	SimpleLogger.info("Starting services:");
-        ThreadPoolService.getInstance().start();
-        JobDispatcherService.getInstance().start(ThreadPoolService.getInstance());
-//        ConfigUtil.get();
+    	ThreadPoolDaemon.getInstance().start();
+        JobDispatcherDaemon.getInstance().start(ThreadPoolDaemon.getInstance());
     }
 }
