@@ -1,4 +1,4 @@
-package interfaces;
+package com.zl.interfaces;
 
 public interface ISlaveMonitor {
 	public void onSlaveAdded();

@@ -1,6 +1,5 @@
-package Slave;
+package com.zl.slave;
 
-import interfaces.ISlaveManager;
 import ServerNode.ServerNodeHelper;
 
 import java.util.ArrayList;
@@ -8,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import daemons.JobDispatcherDaemon;
+import com.zl.daemons.JobDispatchDaemon;
+import com.zl.interfaces.ISlaveManager;
+
 import ServerNode.SlaveNode;
 
 public class SlaveManager implements ISlaveManager {
@@ -44,7 +45,7 @@ public class SlaveManager implements ISlaveManager {
 			slaves.add(slave);
 			relationIpSlave.put(slave.getDomain(), slave);
 		}
-		JobDispatcherDaemon.getInstance().onSlaveAdded();
+		JobDispatchDaemon.getInstance().onSlaveAdded();
 		return true;
 	}
 	

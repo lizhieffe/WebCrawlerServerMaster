@@ -1,16 +1,17 @@
-package controllers;
+package com.zl.controllers;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zl.slave.SlaveManager;
+
 import resources.RSimpleResponse;
 import resources.RSlave;
 import resources.SimpleResponseFactory;
 import utils.SimpleLogger;
 import ServerNode.ServerNodeHelper;
-import Slave.SlaveManager;
 
 @RestController
 public class CSlave {

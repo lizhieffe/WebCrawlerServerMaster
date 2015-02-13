@@ -1,28 +1,30 @@
-package daemons;
+package com.zl.daemons;
 
-import interfaces.IJobToDispatchMonitor;
+import com.zl.interfaces.IJobToDispatchMonitor;
+import com.zl.interfaces.ISlaveMonitor;
+import com.zl.job.JobManager;
+import com.zl.slave.SlaveManager;
+
 import interfaces.IDaemon;
-import interfaces.ISlaveMonitor;
 import interfaces.IThreadPoolDaemon;
 import utils.SimpleLogger;
-import Job.JobManager;
-import JobDispatcher.JobDispatcher;
-import Slave.SlaveManager;
 import abstracts.AJob;
 
-public class JobDispatcherDaemon implements IDaemon, IJobToDispatchMonitor, ISlaveMonitor {
+public class JobDispatchDaemon implements IDaemon, IJobToDispatchMonitor, ISlaveMonitor {
 	
 	private boolean started;
 	
-	private static JobDispatcherDaemon instance;
+	private static JobDispatchDaemon instance;
+	private JobDispatchDaemonHelper helper;
 	
-	public static JobDispatcherDaemon getInstance() {
+	public static JobDispatchDaemon getInstance() {
 		if (instance == null)
-			instance = new JobDispatcherDaemon();
+			instance = new JobDispatchDaemon();
 		return instance;
 	}
 	
-	private JobDispatcherDaemon() {
+	private JobDispatchDaemon() {
+		this.helper = new JobDispatchDaemonHelper();
 	}
 
 	@Override
@@ -59,7 +61,7 @@ public class JobDispatcherDaemon implements IDaemon, IJobToDispatchMonitor, ISla
 				AJob webCrawlingJob = JobManager.getInstance().popWaitingWebCrawlingJob();
 				if (webCrawlingJob != null) {
 					JobManager.getInstance().moveJobToRunningStatus(webCrawlingJob);
-					JobDispatcher.getInstance().dispatchJob(webCrawlingJob);
+					helper.dispatchJob(webCrawlingJob);
 				}
 			}
 			SimpleLogger.logServiceStopSucceed(serviceName);

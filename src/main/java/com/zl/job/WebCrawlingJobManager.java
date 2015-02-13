@@ -1,11 +1,13 @@
-package Job;
+package com.zl.job;
 
 import interfaces.IJobManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import daemons.JobDispatcherDaemon;
+import com.zl.daemons.JobDispatchDaemon;
+
+import Job.WebCrawlingJob;
 import abstracts.AJob;
 
 public class WebCrawlingJobManager implements IJobManager {
@@ -33,7 +35,7 @@ public class WebCrawlingJobManager implements IJobManager {
 		synchronized (this) {
 			waitingJobs.add(job);
 		}
-		JobDispatcherDaemon.getInstance().onJobToDispatchAdded();;
+		JobDispatchDaemon.getInstance().onJobToDispatchAdded();;
 		return true;
 	}
 
@@ -44,7 +46,7 @@ public class WebCrawlingJobManager implements IJobManager {
 			runningJobs.remove(job);
 			waitingJobs.add(job);
 		}
-		JobDispatcherDaemon.getInstance().onJobToDispatchAdded();;
+		JobDispatchDaemon.getInstance().onJobToDispatchAdded();;
 		return true;
 	}
 	

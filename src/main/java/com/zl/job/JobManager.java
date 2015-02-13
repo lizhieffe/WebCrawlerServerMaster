@@ -1,6 +1,7 @@
-package Job;
+package com.zl.job;
 
 import interfaces.IJobManager;
+import Job.WebCrawlingJob;
 import abstracts.AJob;
 
 public class JobManager implements IJobManager {

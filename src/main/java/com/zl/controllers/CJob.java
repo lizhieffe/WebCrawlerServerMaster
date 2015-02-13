@@ -1,15 +1,17 @@
-package controllers;
+package com.zl.controllers;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.zl.job.JobManager;
+
 import resources.RSimpleResponse;
 import resources.RWebCrawlingJob;
 import resources.SimpleResponseFactory;
 import utils.SimpleLogger;
 import Job.JobHelper;
-import Job.JobManager;
 import Job.WebCrawlingJobFactory;
 import abstracts.AJob;
 
