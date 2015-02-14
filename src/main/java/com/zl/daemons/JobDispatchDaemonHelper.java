@@ -1,7 +1,5 @@
 package com.zl.daemons;
 
-import java.util.concurrent.ExecutionException;
-
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,22 +7,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
-
-import com.zl.interfaces.ISlaveManager;
-import com.zl.slave.SlaveManager;
-
 import utils.SimpleLogger;
 import Job.JobHelper;
 import Job.WebCrawlingJob;
 import ServerNode.SlaveNode;
 import abstracts.AJob;
+import com.zl.interfaces.ISlaveManager;
+import com.zl.slave.SlaveManager;
 
 public class JobDispatchDaemonHelper {
 					
 	private static String URI =  "/addslavejob";
 
-	public JobDispatchDaemonHelper() {
+	JobDispatchDaemonHelper() {
 	}
 	
 	synchronized public void dispatchJob(final AJob job) {		
@@ -35,16 +32,18 @@ public class JobDispatchDaemonHelper {
 		SimpleLogger.info("[Dispatcher] Dispatching to SLAVE (" + slave.getDomain() +") about job: URL=" 
 				+ ((WebCrawlingJob)job).getUrl() + ", depth=" 
 				+ ((WebCrawlingJob)job).getDepth());
-		try {
-			ResponseEntity<String> response = future.get();
-			SimpleLogger.info("[Dispatcher] Dispatching finished (" + response.getBody() 
-					+ ") to SLAVE (" + slave.getDomain() +") about job: URL=" + ((WebCrawlingJob)job).getUrl() + ", depth=" 
-					+ ((WebCrawlingJob)job).getDepth());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+		future.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
+			@Override
+			public void onSuccess(ResponseEntity<String> result) {
+				SimpleLogger.info("[Dispatcher] Dispatching finished (" + result.getBody() 
+						+ ") to SLAVE (" + slave.getDomain() +") about job: URL=" + ((WebCrawlingJob)job).getUrl() + ", depth=" 
+						+ ((WebCrawlingJob)job).getDepth());
+			}
+			@Override
+			public void onFailure(Throwable e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static int hashCode(String s) {
