@@ -85,6 +85,11 @@ public class SlaveManager implements ISlaveManager {
 	}
 	
 	@Override
+	synchronized public List<SlaveNode> getSlaves() {
+		return new ArrayList<SlaveNode>(slaves);
+	}
+	
+	@Override
 	synchronized public int getNum() {
 		return slaves.size();
 	}

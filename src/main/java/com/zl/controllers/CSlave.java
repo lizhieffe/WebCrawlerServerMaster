@@ -1,17 +1,21 @@
 package com.zl.controllers;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zl.slave.SlaveManager;
-
 import resources.RSimpleResponse;
 import resources.RSlave;
 import resources.SimpleResponseFactory;
+import utils.ResourceUtil;
 import utils.SimpleLogger;
 import ServerNode.ServerNodeHelper;
+import ServerNode.SlaveNode;
+
+import com.zl.slave.SlaveManager;
 
 @RestController
 public class CSlave {
@@ -56,5 +60,15 @@ public class CSlave {
 		}
 			
 		return SimpleResponseFactory.generateSuccessfulSerciveResponseTemplate();
+	}
+	
+	@RequestMapping(value = "/getslaves", method = RequestMethod.GET, produces="application/json")
+	public RSimpleResponse getSlaves() {
+		
+		SimpleLogger.info(this.getClass(), "[Request] URI=/getslaves");
+		List<SlaveNode> slaves = SlaveManager.getInstance().getSlaves();
+		RSimpleResponse response = SimpleResponseFactory.generateSuccessfulSerciveResponseTemplate();
+		response.setResponse(ResourceUtil.converToRSlaves(slaves));
+		return response;
 	}
 }

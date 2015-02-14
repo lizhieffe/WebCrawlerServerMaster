@@ -1,5 +1,7 @@
 package com.zl.interfaces;
 
+import java.util.List;
+
 import ServerNode.SlaveNode;
 
 public interface ISlaveManager {
@@ -9,5 +11,6 @@ public interface ISlaveManager {
 	public boolean containsSlave(String ip, int port);
 	public SlaveNode getSlave(String ip, int port);
 	public SlaveNode getSlave(int index);
+	public List<SlaveNode> getSlaves();
 	public int getNum();
 }
