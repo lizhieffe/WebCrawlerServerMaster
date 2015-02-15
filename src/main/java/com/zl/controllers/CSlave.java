@@ -32,7 +32,7 @@ public class CSlave {
 			return SimpleResponseFactory.generateFailSerciveResponseTemplate(1, "", "Invalid parameter");
 		}
 		
-		boolean addSlaveSucceed = SlaveManager.getInstance().addSlave(ip, port);
+		boolean addSlaveSucceed = SlaveManager.getInstance().containsSlave(ip, port) || SlaveManager.getInstance().addSlave(ip, port);
 		if (!addSlaveSucceed) {
 			return SimpleResponseFactory.generateFailSerciveResponseTemplate(1, "", "Cannot add slave");
 		}

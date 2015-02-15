@@ -1,49 +1,26 @@
 package com.zl.daemons;
 
-import org.json.JSONObject;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.web.client.AsyncRestTemplate;
-import utils.SimpleLogger;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+
 import Job.JobHelper;
 import Job.WebCrawlingJob;
 import ServerNode.SlaveNode;
 import abstracts.AJob;
+
 import com.zl.interfaces.ISlaveManager;
+import com.zl.services.DispatchJobService;
 import com.zl.slave.SlaveManager;
 
+@Configuration
+@EnableAsync
+@EnableAutoConfiguration
 public class JobDispatchDaemonHelper {
-					
-	private static String URI =  "/addslavejob";
-
-	JobDispatchDaemonHelper() {
-	}
 	
-	synchronized public void dispatchJob(final AJob job) {		
-		AsyncRestTemplate rest = new AsyncRestTemplate();
+	synchronized public void dispatchJob(final AJob job) {
 		final SlaveNode slave = findSlave(job, SlaveManager.getInstance());				
-		ListenableFuture<ResponseEntity<String>> future = rest.exchange(constructRequestUrl(slave),
-				HttpMethod.POST, constructRequestHttpEntity(job), String.class);
-		SimpleLogger.info("[Dispatcher] Dispatching to SLAVE (" + slave.getDomain() +") about job: URL=" 
-				+ ((WebCrawlingJob)job).getUrl() + ", depth=" 
-				+ ((WebCrawlingJob)job).getDepth());
-		future.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
-			@Override
-			public void onSuccess(ResponseEntity<String> result) {
-				SimpleLogger.info("[Dispatcher] Dispatching finished (" + result.getBody() 
-						+ ") to SLAVE (" + slave.getDomain() +") about job: URL=" + ((WebCrawlingJob)job).getUrl() + ", depth=" 
-						+ ((WebCrawlingJob)job).getDepth());
-			}
-			@Override
-			public void onFailure(Throwable e) {
-				e.printStackTrace();
-			}
-		});
+		new DispatchJobService().dispatchJob(slave, job);
 	}
 	
 	public static int hashCode(String s) {
@@ -68,19 +45,5 @@ public class JobDispatchDaemonHelper {
 		String domain = JobHelper.getDomainFromUrl(((WebCrawlingJob)job).getUrl().toString());
 		int hash = hashCode(domain);
 		return slaveManager.getSlave(hash % slaveManager.getNum());
-	}
-	
-	static String constructRequestUrl(SlaveNode slave) {
-		return slave.getDomain() + URI;
-	}
-	
-	static HttpEntity<String> constructRequestHttpEntity(AJob job) {
-		HttpHeaders header = new HttpHeaders();
-		header.setContentType(MediaType.APPLICATION_JSON);
-		JSONObject item = new JSONObject();
-		item.put("type", "webcrawling");
-		item.put("url", ((WebCrawlingJob)job).getUrl().toString());
-		item.put("depth", Integer.valueOf(((WebCrawlingJob)job).getDepth()));
-		return new HttpEntity<String>(item.toString(), header);
 	}
 }
