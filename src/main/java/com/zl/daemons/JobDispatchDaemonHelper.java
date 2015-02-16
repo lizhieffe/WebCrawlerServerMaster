@@ -1,25 +1,24 @@
 package com.zl.daemons;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import Job.JobHelper;
 import Job.WebCrawlingJob;
 import ServerNode.SlaveNode;
 import abstracts.AJob;
 
-import com.zl.interfaces.ISlaveManager;
+import com.zl.managers.SlaveManager;
 import com.zl.services.DispatchJobService;
-import com.zl.slave.SlaveManager;
 
-@Configuration
-@EnableAsync
-@EnableAutoConfiguration
+@Component
 public class JobDispatchDaemonHelper {
 	
+	@Autowired
+	public SlaveManager slaveManager;
+	
 	synchronized public void dispatchJob(final AJob job) {
-		final SlaveNode slave = findSlave(job, SlaveManager.getInstance());				
+		final SlaveNode slave = findSlave(job);				
 		new DispatchJobService().dispatchJob(slave, job);
 	}
 	
@@ -39,7 +38,7 @@ public class JobDispatchDaemonHelper {
      * @param strs: A list of strings
      * @return: A list of strings
      */
-	static SlaveNode findSlave(AJob job, ISlaveManager slaveManager) {
+	synchronized private SlaveNode findSlave(AJob job) {
 		if (job == null || !(job instanceof WebCrawlingJob))
 			return null;
 		String domain = JobHelper.getDomainFromUrl(((WebCrawlingJob)job).getUrl().toString());

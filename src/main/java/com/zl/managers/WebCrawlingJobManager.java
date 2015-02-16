@@ -1,18 +1,22 @@
-package com.zl.job;
-
-import interfaces.IJobManager;
+package com.zl.managers;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zl.daemons.JobDispatchDaemon;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import Job.WebCrawlingJob;
 import abstracts.AJob;
 
+import com.zl.daemons.JobDispatchDaemon;
+import com.zl.interfaces.IJobManager;
+
+@Component
 public class WebCrawlingJobManager implements IJobManager {
 	
-	private static WebCrawlingJobManager instance;
+	@Autowired
+	public JobDispatchDaemon jobDispatchDaemon;
 	
 	private List<AJob> waitingJobs;
 	private List<AJob> runningJobs;
@@ -22,12 +26,6 @@ public class WebCrawlingJobManager implements IJobManager {
 		runningJobs = new ArrayList<AJob>();
 	}
 	
-	synchronized public static WebCrawlingJobManager getInstance() {
-		if (instance == null)
-			instance = new WebCrawlingJobManager();
-		return instance;
-	}
-	
 	@Override
 	public boolean addJob(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
@@ -35,7 +33,7 @@ public class WebCrawlingJobManager implements IJobManager {
 		synchronized (this) {
 			waitingJobs.add(job);
 		}
-		JobDispatchDaemon.getInstance().onJobToDispatchAdded();;
+		jobDispatchDaemon.onJobToDispatchAdded();;
 		return true;
 	}
 
@@ -46,7 +44,7 @@ public class WebCrawlingJobManager implements IJobManager {
 			runningJobs.remove(job);
 			waitingJobs.add(job);
 		}
-		JobDispatchDaemon.getInstance().onJobToDispatchAdded();;
+		jobDispatchDaemon.onJobToDispatchAdded();;
 		return true;
 	}
 	

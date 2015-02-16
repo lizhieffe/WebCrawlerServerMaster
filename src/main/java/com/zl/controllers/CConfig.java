@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import resources.RSimpleResponse;
 import resources.SimpleResponseFactory;
-import utils.SimpleLogger;
 
 @RestController
 public class CConfig {
 	@RequestMapping(value = "/getip", method = RequestMethod.GET)
-	public RSimpleResponse addSlaveJob() {
+	public RSimpleResponse getIp() {
 		return SimpleResponseFactory.generateSuccessfulSerciveResponseTemplate();
 	}
 }

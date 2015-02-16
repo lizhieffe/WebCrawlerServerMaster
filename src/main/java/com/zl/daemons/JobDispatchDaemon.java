@@ -1,30 +1,33 @@
 package com.zl.daemons;
 
-import com.zl.interfaces.IJobToDispatchMonitor;
-import com.zl.interfaces.ISlaveMonitor;
-import com.zl.job.JobManager;
-import com.zl.slave.SlaveManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import interfaces.IDaemon;
-import interfaces.IThreadPoolDaemon;
 import utils.SimpleLogger;
 import abstracts.AJob;
 
+import com.zl.interfaces.IDaemon;
+import com.zl.interfaces.IJobToDispatchMonitor;
+import com.zl.interfaces.ISlaveMonitor;
+import com.zl.interfaces.IThreadPoolDaemon;
+import com.zl.managers.JobManager;
+import com.zl.managers.SlaveManager;
+
+@Component
 public class JobDispatchDaemon implements IDaemon, IJobToDispatchMonitor, ISlaveMonitor {
+	
+	@Autowired
+	public JobDispatchDaemonHelper helper;
+
+	@Autowired
+	public JobManager jobManager;
+	
+	@Autowired
+	public SlaveManager slaveManager;
 	
 	private boolean started;
 	
-	private static JobDispatchDaemon instance;
-	private JobDispatchDaemonHelper helper;
-	
-	public static JobDispatchDaemon getInstance() {
-		if (instance == null)
-			instance = new JobDispatchDaemon();
-		return instance;
-	}
-	
-	private JobDispatchDaemon() {
-		this.helper = new JobDispatchDaemonHelper();
+	public JobDispatchDaemon() {
 	}
 
 	@Override
@@ -54,13 +57,13 @@ public class JobDispatchDaemon implements IDaemon, IJobToDispatchMonitor, ISlave
 		final String serviceName = this.getClass().getName();
 		try {
 			while (started) {
-				while (JobManager.getInstance().getWaitingWebCrawlingJobNum() == 0
-						|| SlaveManager.getInstance().getNum() == 0) {
+				while (jobManager.getWaitingWebCrawlingJobNum() == 0
+						|| slaveManager.getNum() == 0) {
 					wait();
 				}
-				AJob webCrawlingJob = JobManager.getInstance().popWaitingWebCrawlingJob();
+				AJob webCrawlingJob = jobManager.popWaitingWebCrawlingJob();
 				if (webCrawlingJob != null) {
-					JobManager.getInstance().moveJobToRunningStatus(webCrawlingJob);
+					jobManager.moveJobToRunningStatus(webCrawlingJob);
 					helper.dispatchJob(webCrawlingJob);
 				}
 			}

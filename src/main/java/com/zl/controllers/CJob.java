@@ -1,11 +1,10 @@
 package com.zl.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.zl.job.JobManager;
 
 import resources.RSimpleResponse;
 import resources.RWebCrawlingJob;
@@ -15,13 +14,18 @@ import Job.JobHelper;
 import Job.WebCrawlingJobFactory;
 import abstracts.AJob;
 
+import com.zl.managers.JobManager;
+
 @RestController
 public class CJob {
 
+	@Autowired
+	public JobManager jobManager;
+	
 	@RequestMapping(value = "/addmasterjob", method = RequestMethod.POST, consumes="application/json",produces="application/json")
 	public RSimpleResponse addSlaveJob(@RequestBody RWebCrawlingJob reqJob) {
 		
-		SimpleLogger.info(this.getClass(), "[Request] URI=/addmasterjob, URL=" + reqJob.getUrl() + ", Depth=" + reqJob.getDepth());
+		SimpleLogger.info(this.getClass(), "[/addmasterjob] Receive: [" + reqJob.toString() + "]");
 
 		String url = reqJob.getUrl();
 		int depth = reqJob.getDepth();
@@ -33,11 +37,14 @@ public class CJob {
 		}
 		
 		AJob job = WebCrawlingJobFactory.create(url, depth);
-		boolean addJobSucceed = JobManager.getInstance().addJob(job);
+		boolean addJobSucceed = jobManager.addJob(job);
 		if (!addJobSucceed) {
 			return SimpleResponseFactory.generateFailSerciveResponseTemplate(1, "", "Cannot add job");
 		}
 		
-		return SimpleResponseFactory.generateSuccessfulSerciveResponseTemplate();
+		RSimpleResponse response = SimpleResponseFactory.generateSuccessfulSerciveResponseTemplate();
+		SimpleLogger.info(this.getClass(), "[/addmasterjob] Send: [" + response.toString() + "]");
+
+		return response;
 	}
 }

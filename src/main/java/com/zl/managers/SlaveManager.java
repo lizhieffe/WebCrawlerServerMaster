@@ -1,33 +1,31 @@
-package com.zl.slave;
-
-import ServerNode.ServerNodeHelper;
+package com.zl.managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import ServerNode.ServerNodeHelper;
+import ServerNode.SlaveNode;
+
 import com.zl.daemons.JobDispatchDaemon;
 import com.zl.interfaces.ISlaveManager;
 
-import ServerNode.SlaveNode;
-
+@Component
 public class SlaveManager implements ISlaveManager {
+	
+	@Autowired
+	public JobDispatchDaemon jobDispatchDaemon;
 	
 	private List<SlaveNode> slaves;
 	private Map<String, SlaveNode> relationIpSlave;
-	
-	private static SlaveManager instance;
-	
-	private SlaveManager() {
+		
+	public SlaveManager() {
 		this.slaves = new ArrayList<SlaveNode>();
 		this.relationIpSlave = new HashMap<String, SlaveNode>();
-	}
-	
-	synchronized public static SlaveManager getInstance() {
-		if (instance == null)
-			instance = new SlaveManager();
-		return instance;
 	}
 	
 	@Override
@@ -45,7 +43,7 @@ public class SlaveManager implements ISlaveManager {
 			slaves.add(slave);
 			relationIpSlave.put(slave.getDomain(), slave);
 		}
-		JobDispatchDaemon.getInstance().onSlaveAdded();
+		jobDispatchDaemon.onSlaveAdded();
 		return true;
 	}
 	

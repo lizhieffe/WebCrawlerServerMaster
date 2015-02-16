@@ -1,4 +1,4 @@
-package com.zl.job;
+package com.zl.jobs;
 
 public enum JobType {
 	WEB_CRAWLING,

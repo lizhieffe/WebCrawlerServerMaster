@@ -1,3 +1,4 @@
+package com.zl;
 
 class TestBean {
 	String name;

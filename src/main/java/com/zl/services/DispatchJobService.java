@@ -1,6 +1,7 @@
 package com.zl.services;
 
 import org.json.JSONObject;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,8 +15,11 @@ import ServerNode.SlaveNode;
 import abstracts.AJob;
 import abstracts.AService;
 
+import com.zl.interfaces.IDispatchJobService;
+
 @Service
-public class DispatchJobService extends AService {
+@Scope("prototype")
+public class DispatchJobService extends AService implements IDispatchJobService {
 
 	private SlaveNode slave;
 	private AJob job;
@@ -60,5 +64,4 @@ public class DispatchJobService extends AService {
 	@Override
 	public void onFailure(ResponseEntity<String> response) {
 	}
-
 }
