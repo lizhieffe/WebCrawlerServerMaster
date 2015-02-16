@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import utils.SimpleLogger;
+import com.zl.utils.SimpleLogger;
 
 import com.zl.daemons.JobDispatchDaemon;
 import com.zl.daemons.ThreadPoolDaemon;

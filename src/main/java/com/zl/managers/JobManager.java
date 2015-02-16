@@ -3,8 +3,8 @@ package com.zl.managers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import Job.WebCrawlingJob;
-import abstracts.AJob;
+import com.zl.jobs.WebCrawlingJob;
+import com.zl.abstracts.AJob;
 
 import com.zl.interfaces.IJobManager;
 

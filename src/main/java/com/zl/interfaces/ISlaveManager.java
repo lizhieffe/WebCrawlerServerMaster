@@ -2,7 +2,7 @@ package com.zl.interfaces;
 
 import java.util.List;
 
-import ServerNode.SlaveNode;
+import com.zl.server.nodes.SlaveNode;
 
 public interface ISlaveManager {
 	public boolean addSlave(String ip, int port);

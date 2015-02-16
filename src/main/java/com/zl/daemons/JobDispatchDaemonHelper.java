@@ -3,10 +3,10 @@ package com.zl.daemons;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import Job.JobHelper;
-import Job.WebCrawlingJob;
-import ServerNode.SlaveNode;
-import abstracts.AJob;
+import com.zl.jobs.JobHelper;
+import com.zl.jobs.WebCrawlingJob;
+import com.zl.server.nodes.SlaveNode;
+import com.zl.abstracts.AJob;
 
 import com.zl.managers.SlaveManager;
 import com.zl.services.DispatchJobService;

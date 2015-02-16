@@ -7,12 +7,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import ServerNode.ServerNodeHelper;
-import ServerNode.SlaveNode;
-
 import com.zl.daemons.JobDispatchDaemon;
 import com.zl.interfaces.ISlaveManager;
+import com.zl.server.nodes.ServerNodeHelper;
+import com.zl.server.nodes.SlaveNode;
 
 @Component
 public class SlaveManager implements ISlaveManager {

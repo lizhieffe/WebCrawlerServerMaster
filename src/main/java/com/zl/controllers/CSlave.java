@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import resources.RSimpleResponse;
-import resources.RSlave;
-import resources.SimpleResponseFactory;
-import utils.ResourceUtil;
-import utils.SimpleLogger;
-import ServerNode.ServerNodeHelper;
-import ServerNode.SlaveNode;
+import com.zl.resources.RSimpleResponse;
+import com.zl.resources.RSlave;
+import com.zl.resources.SimpleResponseFactory;
+import com.zl.utils.ResourceUtil;
+import com.zl.utils.SimpleLogger;
+import com.zl.server.nodes.ServerNodeHelper;
+import com.zl.server.nodes.SlaveNode;
 
 import com.zl.managers.SlaveManager;
 

@@ -3,8 +3,8 @@ package com.zl.daemons;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import utils.SimpleLogger;
-import abstracts.AJob;
+import com.zl.utils.SimpleLogger;
+import com.zl.abstracts.AJob;
 
 import com.zl.interfaces.IDaemon;
 import com.zl.interfaces.IJobToDispatchMonitor;

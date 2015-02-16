@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import Job.WebCrawlingJob;
-import abstracts.AJob;
+import com.zl.jobs.WebCrawlingJob;
+import com.zl.abstracts.AJob;
 
 import com.zl.daemons.JobDispatchDaemon;
 import com.zl.interfaces.IJobManager;
