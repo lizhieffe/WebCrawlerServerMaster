@@ -2,15 +2,15 @@ package com.zl.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.zl.jobs.WebCrawlingJob;
 import com.zl.abstracts.AJob;
-
 import com.zl.daemons.JobDispatchDaemon;
 import com.zl.interfaces.IJobManager;
+import com.zl.jobs.WebCrawlingJob;
 
 @Component
 public class WebCrawlingJobManager implements IJobManager {
@@ -18,21 +18,19 @@ public class WebCrawlingJobManager implements IJobManager {
 	@Autowired
 	public JobDispatchDaemon jobDispatchDaemon;
 	
-	private List<AJob> waitingJobs;
-	private List<AJob> runningJobs;
+	private CopyOnWriteArrayList<AJob> waitingJobs;
+	private CopyOnWriteArrayList<AJob> runningJobs;
 	
 	private WebCrawlingJobManager() {
-		waitingJobs = new ArrayList<AJob>();
-		runningJobs = new ArrayList<AJob>();
+		waitingJobs = new CopyOnWriteArrayList<AJob>();
+		runningJobs = new CopyOnWriteArrayList<AJob>();
 	}
 	
 	@Override
 	public boolean addJob(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
-		synchronized (this) {
-			waitingJobs.add(job);
-		}
+		waitingJobs.add(job);
 		jobDispatchDaemon.onJobToDispatchAdded();;
 		return true;
 	}
@@ -40,10 +38,8 @@ public class WebCrawlingJobManager implements IJobManager {
 	public boolean moveJobToWaitingStatus(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
-		synchronized (this) {
-			runningJobs.remove(job);
-			waitingJobs.add(job);
-		}
+		runningJobs.remove(job);
+		waitingJobs.add(job);
 		jobDispatchDaemon.onJobToDispatchAdded();;
 		return true;
 	}
@@ -51,41 +47,61 @@ public class WebCrawlingJobManager implements IJobManager {
 	public boolean moveJobToRunningStatus(AJob job) {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
-		synchronized (this) {
-			waitingJobs.remove(job);
-			runningJobs.add(job);
-		}
+		waitingJobs.remove(job);
+		runningJobs.add(job);
 		return true;
 	}
 	
-	synchronized public AJob popWaitingJob() {
-		if (waitingJobs.size() == 0)
-			return null;
-		return waitingJobs.remove(0);
+	public boolean removeJobFromRunningStatus(AJob job) {
+		if (!(job instanceof WebCrawlingJob))
+			return false;
+		boolean result = runningJobs.remove(job);
+		return result;
 	}
 	
-	synchronized public AJob getWaitingJob(int index) {
-		if (index >= waitingJobs.size())
+	public AJob popWaitingJob() {
+		try {
+			return waitingJobs.remove(0);
+		}
+		catch (IndexOutOfBoundsException ex) {
 			return null;
-		return waitingJobs.get(index);
+		}
 	}
 	
-	synchronized public AJob removeWaitingJob(int index) {
-		if (index >= waitingJobs.size())
+	public AJob getWaitingJob(int index) {
+		try {
+			return waitingJobs.get(index);
+		}
+		catch (IndexOutOfBoundsException ex) {
 			return null;
-		return waitingJobs.remove(index);
+		}
 	}
 	
-	synchronized public AJob getRunningJob(int index) {
-		if (index >= runningJobs.size())
+	public AJob removeWaitingJob(int index) {
+		try {
+			return waitingJobs.remove(index);
+		}
+		catch (IndexOutOfBoundsException ex) {
 			return null;
-		return runningJobs.get(index);
+		}
 	}
 	
-	synchronized public AJob removeRunningJob(int index) {
-		if (index >= runningJobs.size())
+	public AJob getRunningJob(int index) {
+		try {
+			return runningJobs.get(index);
+		}
+		catch (IndexOutOfBoundsException ex) {
 			return null;
-		return runningJobs.remove(index);
+		}
+	}
+	
+	public AJob removeRunningJob(int index) {
+		try {
+			return runningJobs.remove(index);
+		}
+		catch (IndexOutOfBoundsException ex) {
+			return null;
+		}
 	}
 	
 //	@Override
@@ -99,12 +115,12 @@ public class WebCrawlingJobManager implements IJobManager {
 	}
 
 //	@Override
-	synchronized public boolean hasJobWaiting() {
+	public boolean hasJobWaiting() {
 		return waitingJobs.size() > 0;
 	}
 
 //	@Override
-	synchronized public boolean hasJobRunning() {
+	public boolean hasJobRunning() {
 		return runningJobs.size() > 0;
 	}
 

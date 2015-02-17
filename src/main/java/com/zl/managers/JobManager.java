@@ -40,6 +40,13 @@ public class JobManager implements IJobManager {
 		return false;
 	}
 	
+	@Override
+	public boolean removeJobFromRunningStatus(AJob job) {
+		if (job instanceof WebCrawlingJob)
+			return webCrawlingJobManager.removeJobFromRunningStatus(job);
+		return false;
+	}
+	
 	public AJob popWaitingWebCrawlingJob() {
 		return webCrawlingJobManager.popWaitingJob();
 	}

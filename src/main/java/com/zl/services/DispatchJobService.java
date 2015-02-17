@@ -1,6 +1,7 @@
 package com.zl.services;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,16 +10,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import com.zl.jobs.WebCrawlingJob;
-import com.zl.server.nodes.SlaveNode;
+
 import com.zl.abstracts.AJob;
 import com.zl.abstracts.AService;
 import com.zl.interfaces.IDispatchJobService;
+import com.zl.jobs.WebCrawlingJob;
+import com.zl.managers.JobManager;
+import com.zl.server.nodes.SlaveNode;
 
 @Service
 @Scope("prototype")
 public class DispatchJobService extends AService implements IDispatchJobService {
 
+	@Autowired
+	public JobManager jobManager;
+	
 	private SlaveNode slave;
 	private AJob job;
 	
@@ -56,10 +62,12 @@ public class DispatchJobService extends AService implements IDispatchJobService 
 	}
 
 	@Override
-	public void onSuccess(ResponseEntity<String> response) {		
+	public void onSuccess(ResponseEntity<String> response) {
+		jobManager.removeJobFromRunningStatus(this.job);
 	}
 
 	@Override
 	public void onFailure(ResponseEntity<String> response) {
+		jobManager.moveJobToWaitingStatus(this.job);
 	}
 }
