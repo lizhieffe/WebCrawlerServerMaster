@@ -5,10 +5,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import com.zl.utils.SimpleLogger;
-
-import com.zl.daemons.JobDispatchDaemon;
 import com.zl.daemons.ThreadPoolDaemon;
+import com.zl.interfaces.IJobDispatchDaemon;
+import com.zl.utils.SimpleLogger;
 
 @Component
 public class StartupHousekeeper implements ApplicationListener<ContextRefreshedEvent> {
@@ -17,7 +16,7 @@ public class StartupHousekeeper implements ApplicationListener<ContextRefreshedE
 	public ThreadPoolDaemon threadPoolDaemon;
 	
 	@Autowired
-	public JobDispatchDaemon jobDispatchDaemon;
+	public IJobDispatchDaemon jobDispatchDaemon;
 	
 	@Override
 	public void onApplicationEvent(final ContextRefreshedEvent event) {
@@ -28,6 +27,7 @@ public class StartupHousekeeper implements ApplicationListener<ContextRefreshedE
 	private void startServices() {
     	SimpleLogger.info("Starting services:");
     	threadPoolDaemon.start();
-    	jobDispatchDaemon.start(ThreadPoolDaemon.getInstance());
+//    	jobDispatchDaemon.start(ThreadPoolDaemon.getInstance());
+    	jobDispatchDaemon.start();
     }
 }

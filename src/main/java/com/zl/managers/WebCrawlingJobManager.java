@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.zl.abstracts.AJob;
-import com.zl.daemons.JobDispatchDaemon;
+import com.zl.interfaces.IJobDispatchDaemon;
 import com.zl.interfaces.IJobManager;
 import com.zl.jobs.WebCrawlingJob;
 
@@ -16,7 +17,8 @@ import com.zl.jobs.WebCrawlingJob;
 public class WebCrawlingJobManager implements IJobManager {
 	
 	@Autowired
-	public JobDispatchDaemon jobDispatchDaemon;
+	@Lazy
+	public IJobDispatchDaemon jobDispatchDaemon;
 	
 	private CopyOnWriteArrayList<AJob> waitingJobs;
 	private CopyOnWriteArrayList<AJob> runningJobs;
@@ -31,7 +33,7 @@ public class WebCrawlingJobManager implements IJobManager {
 		if (!(job instanceof WebCrawlingJob))
 			return false;
 		waitingJobs.add(job);
-		jobDispatchDaemon.onJobToDispatchAdded();;
+		jobDispatchDaemon.onJobToDispatchAdded();
 		return true;
 	}
 
@@ -40,7 +42,7 @@ public class WebCrawlingJobManager implements IJobManager {
 			return false;
 		runningJobs.remove(job);
 		waitingJobs.add(job);
-		jobDispatchDaemon.onJobToDispatchAdded();;
+		jobDispatchDaemon.onJobToDispatchAdded();
 		return true;
 	}
 	

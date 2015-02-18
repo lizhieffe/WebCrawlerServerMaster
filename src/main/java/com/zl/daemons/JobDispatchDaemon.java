@@ -1,20 +1,21 @@
 package com.zl.daemons;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.zl.utils.SimpleLogger;
 import com.zl.abstracts.AJob;
-
 import com.zl.interfaces.IDaemon;
+import com.zl.interfaces.IJobDispatchDaemon;
 import com.zl.interfaces.IJobToDispatchMonitor;
 import com.zl.interfaces.ISlaveMonitor;
 import com.zl.interfaces.IThreadPoolDaemon;
 import com.zl.managers.JobManager;
 import com.zl.managers.SlaveManager;
+import com.zl.utils.SimpleLogger;
 
 @Component
-public class JobDispatchDaemon implements IDaemon, IJobToDispatchMonitor, ISlaveMonitor {
+public class JobDispatchDaemon implements IJobDispatchDaemon, IDaemon, IJobToDispatchMonitor, ISlaveMonitor {
 	
 	@Autowired
 	public JobDispatchDaemonHelper helper;
@@ -46,20 +47,26 @@ public class JobDispatchDaemon implements IDaemon, IJobToDispatchMonitor, ISlave
 		threadPoolDaemon.submit(task);
 	}
 	
-	synchronized public void start() {
-		if (started) {
-			SimpleLogger.logServiceAlreadyStarted(this);
-			return;
+	@Async
+	@Override
+	public void start() {
+		synchronized (this) {
+			if (started) {
+				SimpleLogger.logServiceAlreadyStarted(this);
+				return;
+			}
+			else
+				started = true;
 		}
-		else
-			started = true;
 		
 		final String serviceName = this.getClass().getName();
 		try {
 			while (started) {
-				while (jobManager.getWaitingWebCrawlingJobNum() == 0
-						|| slaveManager.getNum() == 0) {
-					wait();
+				synchronized (this) {
+					while (jobManager.getWaitingWebCrawlingJobNum() == 0
+							|| slaveManager.getNum() == 0) {
+						wait();
+					}
 				}
 				AJob webCrawlingJob = jobManager.popWaitingWebCrawlingJob();
 				if (webCrawlingJob != null) {
@@ -75,7 +82,7 @@ public class JobDispatchDaemon implements IDaemon, IJobToDispatchMonitor, ISlave
 	}
 
 	@Override
-	public void stop() {
+	synchronized public void stop() {
 		if (!this.started)
 			return;
 		else

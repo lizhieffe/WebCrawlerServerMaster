@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
 import com.zl.daemons.JobDispatchDaemon;
+import com.zl.interfaces.IJobDispatchDaemon;
 import com.zl.interfaces.ISlaveManager;
 import com.zl.server.nodes.ServerNodeHelper;
 import com.zl.server.nodes.SlaveNode;
@@ -16,7 +19,8 @@ import com.zl.server.nodes.SlaveNode;
 public class SlaveManager implements ISlaveManager {
 	
 	@Autowired
-	public JobDispatchDaemon jobDispatchDaemon;
+	@Lazy
+	public IJobDispatchDaemon jobDispatchDaemon;
 	
 	private List<SlaveNode> slaves;
 	private Map<String, SlaveNode> relationIpSlave;

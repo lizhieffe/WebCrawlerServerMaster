@@ -1,20 +1,23 @@
 package com.zl.controllers;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sun.management.ThreadMXBean;
+import com.zl.abstracts.AJob;
+import com.zl.jobs.JobHelper;
+import com.zl.jobs.WebCrawlingJobFactory;
+import com.zl.managers.JobManager;
 import com.zl.resources.RSimpleResponse;
 import com.zl.resources.RWebCrawlingJob;
 import com.zl.resources.SimpleResponseFactory;
 import com.zl.utils.SimpleLogger;
-import com.zl.jobs.JobHelper;
-import com.zl.jobs.WebCrawlingJobFactory;
-import com.zl.abstracts.AJob;
-
-import com.zl.managers.JobManager;
 
 @RestController
 public class CJob {
@@ -24,6 +27,31 @@ public class CJob {
 	
 	@RequestMapping(value = "/addmasterjob", method = RequestMethod.POST, consumes="application/json",produces="application/json")
 	public RSimpleResponse addSlaveJob(@RequestBody RWebCrawlingJob reqJob) {
+		
+		Runnable task = new Runnable() {
+
+			@Override
+			public void run() {
+				ThreadMXBean bean = (ThreadMXBean) ManagementFactory.getThreadMXBean();
+				long[] threadIds = bean.findDeadlockedThreads(); // Returns null if no threads are deadlocked.
+
+				if (threadIds != null) {
+				    ThreadInfo[] infos = bean.getThreadInfo(threadIds);
+
+				    for (ThreadInfo info : infos) {
+//				        StackTraceElement[] stack = info.getStackTrace();
+				        SimpleLogger.error(info.toString());
+				    }
+				    throw new RuntimeException("Deadlock found");
+				}
+			}
+			
+		};
+		new Thread(task).start();
+		
+		
+		
+		
 		
 		SimpleLogger.info(this.getClass(), "[Server receives][/addmasterjob][" + reqJob.toString() + "]");
 
