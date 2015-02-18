@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.zl.abstracts.AJob;
@@ -28,7 +27,14 @@ public class DispatchJobService extends AService implements IDispatchJobService 
 	private SlaveNode slave;
 	private AJob job;
 	
-	@Async
+	/**
+	 * disable async service since 
+	 * 1. the communication between servers should be fast
+	 * 2. now each request contains only a single job. 
+	 * If async, there can be some overhead for the communication (this can be improved by put more job info in a single request) 
+	 */
+//	@Async
+	@Override
 	public void dispatchJob(SlaveNode slave, AJob job) {
 		this.slave = slave;
 		this.job = job;
